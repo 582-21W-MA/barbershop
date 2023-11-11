@@ -38,7 +38,6 @@ La structure suivante est suggérée :
 
 ```sh
 .
-├── barbershop.sh
 ├── site
 └── src
     ├── _partials
