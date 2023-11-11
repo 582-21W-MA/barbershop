@@ -5,9 +5,10 @@
 
 function print_help() {
     echo "Barbershop is a simple static site generator using Mustache          "
-    echo "templates. It transforms templates from a src directory into HTML    "
-    echo "files and places them in a site directory. It looks for a data.json  "
-    echo "file in the same directory as the page template file. It ignores     "
+    echo "templates. It transforms templates from a src directory into         "
+    echo "HTML files and places them in a site directory. It looks for a       "
+    echo "data.json file in the same directory as the page template file. Data "
+    echo "from src/global.json file is available to all pages. It ignores      "
     echo "directories beginning with an underscore, and copies src/assets      "
     echo "directory in the site directory.                                     "
 
@@ -27,7 +28,7 @@ while getopts ":h" option; do
     case $option in
         h)
             print_help
-            exit
+            exit ;;
     esac
 done
 
@@ -48,7 +49,8 @@ fi
 for page_path in $(find src/[!_]* -name "*.mustache"); do
 
     page_dir=$(dirname "$page_path")
-    data_path="$page_dir/data.yml"
+    data_path="$page_dir/data.json"
+    global_data_path="src/global.json"
 
     # Bash's builtin parameter expansion is used for substitution
     # as it's more portable than using an external command such
@@ -58,7 +60,12 @@ for page_path in $(find src/[!_]* -name "*.mustache"); do
 
     mkdir -p "$(dirname $site_path)"
 
-    if [ -e "$data_path" ]; then
+    if [ -e "$global_data_path" ] && [ -e "$data_path" ]; then
+        $mustache --override "$global_data_path" "$data_path" "$page_path" \
+            > "$site_path"
+    elif [ -e "$global_data_path" ]; then
+        $mustache "$global_data_path" "$page_path" > "$site_path"
+    elif [ -e "$data_path" ]; then
         $mustache "$data_path" "$page_path" > "$site_path"
     else
         # If there is no JSON file alongside the page template,
@@ -66,8 +73,7 @@ for page_path in $(find src/[!_]* -name "*.mustache"); do
         echo "" | $mustache "$page_path" > "$site_path"
     fi
 
-    # `let` is used for arithmetic expressions.
-    let page_processed++
+    ((page_processed++))
 
 done
 

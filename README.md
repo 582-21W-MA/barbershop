@@ -25,9 +25,13 @@ Barbershop localise les gabarits Mustache qui se trouvent dans le
 répertoire `src`, les transforme en document HTML, et place ceux-ci
 dans le répertoire `site`. À l'exception de la page d'accueil, qui
 doit se trouver à la racine du répertoire `src`, chaque page doit
-être dans son propre répertoire. Barbershop cherche pour un fichier
-de données `data.json` dans le même répertoire que le gabarit de la
-page.
+être dans son propre répertoire.
+
+Barbershop cherche pour un fichier de données `data.json` dans le
+même répertoire que le gabarit de la page. Ces données seront
+disponibles seulement pour cette page. Si un `global.json` se trouve
+à la racine du répertoire `src`, Barbershop rend ses données
+disponibles à toutes les pages.
 
 Les gabarits qui se trouvent dans des sous-répertoires dont le
 nom commence avec un tiret bas sont ignorés. Si `src` contient un
@@ -49,6 +53,7 @@ La structure suivante est suggérée :
     ├── assets
     │   ├── css
     │   └── ...
+    ├── global.json # données globales pour toutes les pages
     ├── data.json # données de la page d'accueil
     └── index.mustache # gabarit de la page d'accueil
 ```
