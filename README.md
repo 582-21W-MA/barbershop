@@ -1,7 +1,7 @@
 # Barbershop
 
 Barbershop est un simple générateur de site statique qui utilise le
-moteur de gabarit Mustache.
+moteur de gabarit [Mustache](https://mustache.github.io).
 
 ## Installation
 
@@ -45,7 +45,7 @@ La structure suivante est suggérée :
     │   └── ...
     ├── about # et tout autre page
     │   ├── data.json # données de la page about
-    │   └── index.mustache # gabarit de la page d'accueil
+    │   └── index.mustache # gabarit de la page about
     ├── assets
     │   ├── css
     │   └── ...
