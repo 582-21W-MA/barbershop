@@ -1,0 +1,76 @@
+#!/bin/bash
+
+###############################################################################
+# HELP
+
+function print_help() {
+    echo "Barbershop is a simple static site generator using Mustache          "
+    echo "templates. It transforms templates from a src directory into HTML    "
+    echo "files and places them in a site directory. It looks for a data.json  "
+    echo "file in the same directory as the page template file. It ignores     "
+    echo "directories beginning with an underscore, and copies src/assets      "
+    echo "directory in the site directory.                                     "
+
+    echo
+    echo "Syntax:"
+    echo "    barbershop [mustache] [-h]"
+    echo
+    echo "Arguments:"
+    echo "    mustache    Path to mustache executable."
+    echo "                If omitted, use mustache command from PATH."
+    echo
+    echo "Options:"
+    echo "    -h    Print help."
+}
+
+while getopts ":h" option; do
+    case $option in
+        h)
+            print_help
+            exit
+    esac
+done
+
+###############################################################################
+# PROCESSOR
+
+mustache=${1:-mustache} # Set `mustache` to "mustache" if no arg is passed.
+page_processed=0
+
+# `-e` checks if the given file or directory exists.
+if [ ! -e "src" ]; then
+    echo "No src directory found."
+    exit
+fi
+
+# `find` searches in folders that don't begin with an underscore
+# for files with a mustache extension, and returns their path.
+for page_path in $(find src/[!_]* -name "*.mustache"); do
+
+    page_dir=$(dirname "$page_path")
+    data_path="$page_dir/data.yml"
+
+    # Bash's builtin parameter expansion is used for substitution
+    # as it's more portable than using an external command such
+    # as sed.
+    site_path="${page_path/src/site}"
+    site_path="${site_path/.mustache/.html}"
+
+    mkdir -p "$(dirname $site_path)"
+
+    if [ -e "$data_path" ]; then
+        $mustache "$data_path" "$page_path" > "$site_path"
+    else
+        # If there is no JSON file alongside the page template,
+        # process the template with an empty string as data.
+        echo "" | $mustache "$page_path" > "$site_path"
+    fi
+
+    # `let` is used for arithmetic expressions.
+    let page_processed++
+
+done
+
+cp -r "src/assets" "site"
+
+echo "All mustaches successfully shaved. $page_processed pages created."
