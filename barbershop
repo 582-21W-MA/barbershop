@@ -31,7 +31,8 @@ while getopts ":h" option; do
     case $option in
         h)
             print_help
-            exit ;;
+            exit
+            ;;
     esac
 done
 
@@ -85,6 +86,8 @@ for page_path in $(find "$src_dir"/[!_]* -name "*.mustache"); do
 
 done
 
-cp -r "$src_dir/assets" "$site_dir"
+if [-e "$src_dir/assets"]; then
+    cp -r "$src_dir/assets" "$site_dir"
+done
 
 echo "All mustaches successfully shaved. $page_processed pages created."

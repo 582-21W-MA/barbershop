@@ -1,3 +1,12 @@
 {
-	"nav": "navigation"
+	"nav": [
+		{
+			"name": "Home",
+			"url": "/"
+		},
+		{
+			"name": "About",
+			"url": "/about"
+		}
+	]
 }
