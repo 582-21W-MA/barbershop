@@ -5,18 +5,21 @@
 
 function print_help() {
     echo "Barbershop is a simple static site generator using Mustache          "
-    echo "templates. It transforms templates from a src directory into         "
-    echo "HTML files and places them in a site directory. It looks for a       "
-    echo "data.json file in the same directory as the page template file. Data "
-    echo "from src/global.json file is available to all pages. It ignores      "
+    echo "templates. It transforms templates found in the source directory     "
+    echo "into HTML files and places them in a site directory. It looks for    "
+    echo "a data.json file in the same directory as the page template file.    "
+    echo "Data from src/global.json file is available to all pages. It ignores "
     echo "directories beginning with an underscore, and copies src/assets      "
     echo "directory in the site directory.                                     "
-
     echo
     echo "Syntax:"
-    echo "    barbershop [mustache] [-h]"
+    echo "    barbershop [src] [site] [mustache] [-h]"
     echo
     echo "Arguments:"
+    echo "    src         Source directory containing template files."
+    echo "                If ommited, look for directory named src."
+    echo "    site        Directory where to put HTML files."
+    echo "                If ommited, use directory named site."
     echo "    mustache    Path to mustache executable."
     echo "                If omitted, use mustache command from PATH."
     echo
@@ -35,27 +38,32 @@ done
 ###############################################################################
 # PROCESSOR
 
-mustache=${1:-mustache} # Set `mustache` to "mustache" if no arg is passed.
+# Set default values. See Bash parameter expansion:
+# https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+src_dir=${1:-src}
+site_dir=${2:-site}
+mustache=${3:-mustache}
+
 page_processed=0
 
 # `-e` checks if the given file or directory exists.
-if [ ! -e "src" ]; then
-    echo "No src directory found."
+if [ ! -e "$src_dir" ]; then
+    echo "No source directory found."
     exit
 fi
 
 # `find` searches in folders that don't begin with an underscore
 # for files with a mustache extension, and returns their path.
-for page_path in $(find src/[!_]* -name "*.mustache"); do
+for page_path in $(find "$src_dir"/[!_]* -name "*.mustache"); do
 
     page_dir=$(dirname "$page_path")
     data_path="$page_dir/data.json"
-    global_data_path="src/global.json"
+    global_data_path="$src_dir/global.json"
 
     # Bash's builtin parameter expansion is used for substitution
     # as it's more portable than using an external command such
     # as sed.
-    site_path="${page_path/src/site}"
+    site_path="${page_path/$src_dir/$site_dir}"
     site_path="${site_path/.mustache/.html}"
 
     mkdir -p "$(dirname $site_path)"
@@ -77,6 +85,6 @@ for page_path in $(find src/[!_]* -name "*.mustache"); do
 
 done
 
-cp -r "src/assets" "site"
+cp -r "$src_dir/assets" "$site_dir"
 
 echo "All mustaches successfully shaved. $page_processed pages created."
