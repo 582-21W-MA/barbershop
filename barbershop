@@ -4,6 +4,7 @@
 # HELP
 
 function print_help() {
+    echo
     echo "Barbershop is a simple static site generator using Mustache          "
     echo "templates. It transforms templates found in the source directory     "
     echo "into HTML files and places them in a site directory. It looks for    "
@@ -25,6 +26,7 @@ function print_help() {
     echo
     echo "Options:"
     echo "    -h    Print help."
+	echo
 }
 
 while getopts ":h" option; do
@@ -50,7 +52,13 @@ page_processed=0
 # `-e` checks if the given file or directory exists.
 if [ ! -e "$src_dir" ]; then
     echo "No source directory found."
-    exit
+    exit 1
+fi
+
+# Check if mustache command exists
+if ! command -v "$mustache" &> /dev/null; then
+    echo "Mustache executable could not be found."
+    exit 1
 fi
 
 # `find` searches in folders that don't begin with an underscore
@@ -86,8 +94,8 @@ for page_path in $(find "$src_dir"/[!_]* -name "*.mustache"); do
 
 done
 
-if [-e "$src_dir/assets"]; then
+if [ -e "$src_dir/assets" ]; then
     cp -r "$src_dir/assets" "$site_dir"
-done
+fi
 
 echo "All mustaches successfully shaved. $page_processed pages created."
