@@ -5,39 +5,72 @@ moteur de gabarit [Mustache](https://mustache.github.io).
 
 ## Installation
 
-Pour installer Barbershop, il suffit de placer le script `barbershop`
-à la racine de votre projet ou dans un répertoire sur votre `PATH`.
+Pour installer Barbershop, il suffit de placer le fichier exécutable
+ci-joint (voir *releases*) dans un répertoire sur votre `PATH`.
 
 ## Utilisation
 
-Par défaut, Barbershop utilise la commande `mustache` qui se trouve
-sur votre `PATH`. Si Mustache n'est pas installé globalement sur
-votre ordinateur, il faut exécuter Barbershop avec comme argument le
-chemin d'accès au fichier exécutable Mustache. Par exemple :
+La commande `barbershop` prend comme argument le répertoire d'entré
+dans lequel se trouve les gabarits Mustache. Par exemple :
 
 ```sh
-barbershop src site ./mustache
+barbershop src
+```
+
+Étant donné la commande ci-haut, Barbershop interprètera les gabarits
+qui se trouvent dans le répertoire `src`, et placera le résultat dans
+un répertoire de sortie `site`.
+
+### Serveur
+
+La sous-commande `serve`, suivie du chemin d'accès vers le répertoire
+`site`, permet de lancer un serveur de développement local :
+
+```sh
+barbershop serve site
+```
+
+### Guet
+
+La sous-commande `watch`, suivie du chemin d'accès vers le
+répertoire d'entrée, somme Barbershop de s'exécuter à chaque fois
+qu'un changement est détecté. Un serveur de développement local est
+également lancé. Par exemple :
+
+```sh
+barbershop watch src
 ```
 
 ## Organisation du contenu
 
-Barbershop localise les gabarits Mustache qui se trouvent dans un
-répertoire source (par défaut, `src`), les transforme en document
-HTML, et place ceux-ci dans un répertoire de sortie (par défaut,
-`site`). À l'exception de la page d'accueil, qui doit se trouver
-à la racine du répertoire source, chaque page doit être dans son
+### Pages
+
+À l'exception de la page d'accueil, qui doit se trouver
+à la racine du répertoire d'entré, chaque page doit être dans son
 propre répertoire.
+
+### Données
 
 Barbershop cherche pour un fichier de données `data.json` dans le
 même répertoire que le gabarit de la page. Ces données seront
-disponibles seulement pour cette page. Si un `global.json` se trouve
-à la racine du répertoire source, Barbershop rend ses données
-disponibles à toutes les pages.
+disponibles seulement pour cette page. Si un fichier `global.json`
+se trouve à la racine du répertoire d'entrée, Barbershop rend ses
+données disponibles à toutes les pages.
 
-Les gabarits qui se trouvent dans des sous-répertoires dont le
-nom commence avec un tiret bas sont ignorés. Si le répertoire source
-contient un sous-répertoire nommé `assets`, celui-ci est copié tel
-quel dans répertoire de sortie.
+### Partiels
+
+Barbershop cherche les partiels dans un répertoire nommé
+`_partials`. Par conséquent, il n'est pas nécessaire de fournir
+le chemin d'accès de ceux-ci. Par exemple, si nous désirons
+importer le partiel `_partials/header.mustache` à partir du gabarit
+`about/index.mustache`, il suffit de spécifier `{{> header}}`.
+
+### Ressources
+
+Si le répertoire d'entrée contient un sous-répertoire nommé
+`assets`, celui-ci est copié tel quel dans répertoire de sortie.
+
+### Arborescence
 
 La structure suivante est suggérée :
 

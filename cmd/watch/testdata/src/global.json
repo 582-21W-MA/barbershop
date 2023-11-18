@@ -1,0 +1,12 @@
+{
+	"nav": [
+		{
+			"url": "/",
+			"item": "Home"
+		},
+		{
+			"url": "/about",
+			"item": "About"
+		}
+	]
+}
