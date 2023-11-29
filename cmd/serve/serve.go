@@ -11,7 +11,7 @@ import (
 
 func Run(rootDir string) {
 	errorLog := log.New(os.Stderr, "", log.Ltime)
-	serveLog := log.New(os.Stdout, "SERVER ", log.Ltime)
+	serveLog := log.New(os.Stdout, "SERVER  ", log.Ltime)
 	fileHandler := serveLogger(serveLog, http.FileServer(http.Dir(rootDir)))
 	http.Handle("/", fileHandler)
 	listener, err := net.Listen("tcp", "localhost:0")
@@ -24,7 +24,7 @@ func Run(rootDir string) {
 		errorLog.Println(err)
 		os.Exit(1)
 	}
-	fmt.Printf("Serving %q on http://%s\n", rootDir, listener.Addr())
+	fmt.Printf("Serving %q directory at address http://%s ... \n", rootDir, listener.Addr())
 	if err := server.Serve(listener); err != nil {
 		errorLog.Println(err)
 		os.Exit(1)
