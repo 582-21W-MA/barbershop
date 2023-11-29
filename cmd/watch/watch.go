@@ -13,6 +13,8 @@ import (
 )
 
 func Run(rootDir string) {
+	watchLog := log.New(os.Stdout, "WATCHER ", log.Ltime)
+
 	// barbershop needs to run once to set OutputDir.
 	// TODO: Remove OutputDir from barbershop.
 	barbershop.Quiet = true
@@ -38,8 +40,8 @@ func Run(rootDir string) {
 		return nil
 	})
 
-	go watchLoop(watcher, rootDir)
-	fmt.Printf("Watching %q\n", rootDir)
+	go watchLoop(watcher, rootDir, watchLog)
+	fmt.Printf("Watching %q directory ...\n", rootDir)
 
 	serve.Run(barbershop.OutputDir)
 
@@ -48,14 +50,14 @@ func Run(rootDir string) {
 }
 
 // watchLoop monitors directories in the watcher's monitoring list.
-func watchLoop(watcher *fsnotify.Watcher, rootDir string) {
+func watchLoop(watcher *fsnotify.Watcher, rootDir string, logger *log.Logger) {
 	for {
 		select {
 		case event, ok := <-watcher.Events:
 			if !ok {
 				return
 			}
-			if err := triageEvent(event, watcher, rootDir); err != nil {
+			if err := triageEvent(event, watcher, rootDir, logger); err != nil {
 				log.Fatalf("Error triaging event: %v", err)
 			}
 		case err, ok := <-watcher.Errors:
@@ -71,7 +73,7 @@ func watchLoop(watcher *fsnotify.Watcher, rootDir string) {
 // delete, rename, modify). barbershop is called when a file is either
 // created, written to, removed or renamed. When a folder is created,
 // it is added to the monitoring list.
-func triageEvent(event fsnotify.Event, watcher *fsnotify.Watcher, rootDir string) error {
+func triageEvent(event fsnotify.Event, watcher *fsnotify.Watcher, rootDir string, logger *log.Logger) error {
 	// See fsnotify documentation. Chmod is often fired.
 	if event.Has(fsnotify.Chmod) {
 		return nil
@@ -94,11 +96,14 @@ func triageEvent(event fsnotify.Event, watcher *fsnotify.Watcher, rootDir string
 		if err := barbershop.Run(rootDir); err != nil {
 			return fmt.Errorf("executing barbershop: %w", err)
 		}
+		logger.Println("%q %v Site updated", event.Name, event.Op)
 	}
 
 	// barbershop is executed for rename, modify and delete events.
 	if err := barbershop.Run(rootDir); err != nil {
 		return fmt.Errorf("executing barbershop: %w", err)
 	}
+	logger.Printf("%q %v Site updated\n", event.Name, event.Op)
+
 	return nil
 }
