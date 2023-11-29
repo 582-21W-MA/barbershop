@@ -10,7 +10,7 @@ ci-joint (voir *releases*) dans un répertoire sur votre `PATH`.
 
 ## Utilisation
 
-La commande `barbershop` prend comme argument le répertoire d'entré
+La commande `barbershop` prend comme argument le répertoire d'entrée
 dans lequel se trouve les gabarits Mustache. Par exemple :
 
 ```sh
@@ -46,7 +46,7 @@ barbershop watch src
 ### Pages
 
 À l'exception de la page d'accueil, qui doit se trouver
-à la racine du répertoire d'entré, chaque page doit être dans son
+à la racine du répertoire d'entrée, chaque page doit être dans son
 propre répertoire.
 
 ### Données
@@ -63,7 +63,8 @@ Barbershop cherche les partiels dans un répertoire nommé
 `_partials`. Par conséquent, il n'est pas nécessaire de fournir
 le chemin d'accès de ceux-ci. Par exemple, si nous désirons
 importer le partiel `_partials/header.mustache` à partir du gabarit
-`about/index.mustache`, il suffit de spécifier `{{> header}}`.
+`about/index.mustache`, il suffit d'écrire `{{> header}}` dans ce
+dernier .
 
 ### Ressources
 
